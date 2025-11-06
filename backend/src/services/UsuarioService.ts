@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt, { SignOptions } from 'jsonwebtoken';
+import type { StringValue } from 'ms';
 import { UsuarioRepository } from '../repositories/UsuarioRepository';
 import { CreateUsuarioDTO, UpdateUsuarioDTO, UsuarioResponse, LoginDTO, AuthResponse } from '../types/Usuario';
 
@@ -138,7 +139,7 @@ export class UsuarioService {
       email: user.email 
     };
 
-    const expiresInValue = process.env.JWT_EXPIRES_IN || '7d';
+    const expiresInValue = (process.env.JWT_EXPIRES_IN || '7d') as StringValue;
 
     // Usar type assertion para resolver problema de tipos do jsonwebtoken
     const token = jwt.sign(
