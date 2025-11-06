@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { UsuarioRepository } from '../repositories/UsuarioRepository';
 import { CreateUsuarioDTO, UpdateUsuarioDTO, UsuarioResponse, LoginDTO, AuthResponse } from '../types/Usuario';
 
@@ -129,9 +129,13 @@ export class UsuarioService {
     }
 
     const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
+    if (!jwtSecret || typeof jwtSecret !== 'string') {
       throw new Error('JWT_SECRET não configurado');
     }
+
+    const signOptions: SignOptions = {
+      expiresIn: process.env.JWT_EXPIRES_IN || '7d'
+    };
 
     const token = jwt.sign(
       { 
@@ -139,7 +143,7 @@ export class UsuarioService {
         email: user.email 
       },
       jwtSecret,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      signOptions
     );
 
     const { senha, deleted_at, ...rest } = user;
