@@ -129,22 +129,21 @@ export class UsuarioService {
     }
 
     const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret || typeof jwtSecret !== 'string') {
+    if (typeof jwtSecret !== 'string' || !jwtSecret) {
       throw new Error('JWT_SECRET não configurado');
     }
 
-    const signOptions: SignOptions = {
-      expiresIn: process.env.JWT_EXPIRES_IN || '7d'
+    const payload = { 
+      id: user.id, 
+      email: user.email 
     };
 
-    const token = jwt.sign(
-      { 
-        id: user.id, 
-        email: user.email 
-      },
-      jwtSecret,
-      signOptions
-    );
+    const expiresIn: string | number | undefined = process.env.JWT_EXPIRES_IN || '7d';
+    const options: SignOptions = {
+      expiresIn: expiresIn as string | number
+    };
+
+    const token = jwt.sign(payload, jwtSecret, options);
 
     const { senha, deleted_at, ...rest } = user;
     
