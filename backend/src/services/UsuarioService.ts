@@ -138,12 +138,16 @@ export class UsuarioService {
       email: user.email 
     };
 
-    const expiresIn: string | number | undefined = process.env.JWT_EXPIRES_IN || '7d';
-    const options: SignOptions = {
-      expiresIn: expiresIn as string | number
-    };
+    const expiresInValue = process.env.JWT_EXPIRES_IN || '7d';
 
-    const token = jwt.sign(payload, jwtSecret, options);
+    // Usar type assertion para resolver problema de tipos do jsonwebtoken
+    const token = jwt.sign(
+      payload,
+      jwtSecret,
+      {
+        expiresIn: expiresInValue
+      } as SignOptions
+    ) as string;
 
     const { senha, deleted_at, ...rest } = user;
     
