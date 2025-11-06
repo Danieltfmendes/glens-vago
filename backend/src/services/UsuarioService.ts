@@ -128,16 +128,33 @@ export class UsuarioService {
       throw new Error('Credenciais inválidas');
     }
 
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      throw new Error('JWT_SECRET não configurado');
+    }
+
     const token = jwt.sign(
       { 
         id: user.id, 
         email: user.email 
       },
-      process.env.JWT_SECRET || 'default_secret',
+      jwtSecret,
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 
-    const { senha, deleted_at, ...usuarioResponse } = user;
+    const { senha, deleted_at, ...rest } = user;
+    
+    // Garantir que created_at e updated_at existam
+    const usuarioResponse: UsuarioResponse = {
+      id: user.id,
+      nome: user.nome,
+      cpf: user.cpf,
+      email: user.email,
+      telefone: user.telefone,
+      endereco: user.endereco,
+      created_at: user.created_at || new Date(),
+      updated_at: user.updated_at || new Date()
+    };
 
     return {
       usuario: usuarioResponse,
