@@ -22,6 +22,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "node node_modules/react-scripts/bin/react-scripts.js build",
+    "postbuild": "node scripts/copy-build-to-dist.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -52,7 +53,6 @@
     "node": ">=18.18.0 <19.0.0"
   }
 }
-
 
 
 
