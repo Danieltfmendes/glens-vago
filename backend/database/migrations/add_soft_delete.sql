@@ -12,3 +12,4 @@ CREATE INDEX idx_usuarios_cpf_active ON usuarios(cpf) WHERE deleted_at IS NULL;
 
 
 
+

@@ -8,6 +8,8 @@ services:
     startCommand: npm start
     autoDeploy: true
     envVars:
+      - key: NODE_VERSION
+        value: 18.18.0
       - key: NODE_ENV
         value: production
       - key: PORT
@@ -36,6 +38,8 @@ services:
         name: "Cache-Control"
         value: "public, max-age=0, must-revalidate"
     envVars:
+      - key: NODE_VERSION
+        value: 18.18.0
       - key: REACT_APP_API_URL
         fromService:
           type: web
