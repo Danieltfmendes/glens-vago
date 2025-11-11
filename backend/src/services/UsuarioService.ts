@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import type { StringValue } from 'ms';
 import { UsuarioRepository } from '../repositories/UsuarioRepository';
+import { getSupabaseClient } from '../clients/supabaseClient';
 import { CreateUsuarioDTO, UpdateUsuarioDTO, UsuarioResponse, LoginDTO, AuthResponse } from '../types/Usuario';
 
 export class UsuarioService {
@@ -42,7 +43,32 @@ export class UsuarioService {
       senha: hashedPassword
     };
 
-    return await this.usuarioRepository.create(usuarioToCreate);
+    const usuario = await this.usuarioRepository.create(usuarioToCreate);
+
+    // Enviar registro para a tabela `usuario` no Supabase (melhor esforço)
+    try {
+      const supabase = await getSupabaseClient();
+      if (supabase) {
+        const { error } = await supabase
+          .from('usuario')
+          .insert({
+            nome: usuario.nome,
+            cpf: usuario.cpf,
+            email: usuario.email,
+            telefone: usuario.telefone ?? null,
+            endereco: usuario.endereco ?? null,
+            created_at: usuario.created_at,
+          });
+
+        if (error) {
+          console.error('[Supabase] Falha ao inserir usuário na tabela usuario:', error.message);
+        }
+      }
+    } catch (e) {
+      console.error('[Supabase] Erro inesperado ao integrar com Supabase:', e);
+    }
+
+    return usuario;
   }
 
   async findById(id: number): Promise<UsuarioResponse | null> {
