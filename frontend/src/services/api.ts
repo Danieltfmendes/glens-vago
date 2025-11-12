@@ -39,7 +39,14 @@ export const authService = {
   },
 
   async register(registerData: RegisterData): Promise<ApiResponse<User>> {
-    const response = await api.post<ApiResponse<User>>('/api/usuarios', registerData);
+    // Sanitizar dados conforme validação do backend (CPF somente dígitos)
+    const payload: RegisterData = {
+      ...registerData,
+      cpf: registerData.cpf.replace(/\D/g, ''),
+      telefone: registerData.telefone ? registerData.telefone.replace(/\D/g, '') : undefined,
+    };
+
+    const response = await api.post<ApiResponse<User>>('/api/usuarios', payload);
     return response.data;
   },
 
